@@ -15,7 +15,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        # macos-latest 镜像不含 Xcode 14；需 Apple Clang 14 时用 macos-13（仍带 Xcode 14.x）。
+        # 若 macos-13 已下线，可改 macos-14 + setup-xcode xcode-version: '16.4.0'（Clang 16）。
+        os: [macos-13, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v3
