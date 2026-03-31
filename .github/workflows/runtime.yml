@@ -15,19 +15,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # macos-latest 镜像不含 Xcode 14；需 Apple Clang 14 时用 macos-13（仍带 Xcode 14.x）。
-        # 若 macos-13 已下线，可改 macos-14 + setup-xcode xcode-version: '16.4.0'（Clang 16）。
-        os: [macos-13, ubuntu-latest]
+        # macos-13 已退役；当前托管机使用 macos-latest（或 macos-14），仅提供 Xcode 16/26 等。
+        os: [macos-latest, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v3
 
-      # Xcode 14 ships Apple Clang 14 (avoid newer Xcode default on macos-latest).
-      - name: Select Xcode 14 (Apple Clang 14)
+      # 固定当前镜像上存在的 Xcode 16.x（Apple Clang 16）；不再提供 Xcode 14。
+      - name: Select Xcode 16.4 (Apple Clang 16)
         if: runner.os == 'macOS'
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "14"
+          xcode-version: "16.4"
 
       # Pin CMake 3.x: GitHub-hosted runners may ship CMake 4, which rejects
       # FetchContent deps with cmake_minimum_required < 3.5 (gflags/glog).
