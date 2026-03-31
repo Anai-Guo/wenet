@@ -20,6 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # Xcode 14 ships Apple Clang 14 (avoid newer Xcode default on macos-latest).
+      - name: Select Xcode 14 (Apple Clang 14)
+        if: runner.os == 'macOS'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "14"
+
       # Pin CMake 3.x: GitHub-hosted runners may ship CMake 4, which rejects
       # FetchContent deps with cmake_minimum_required < 3.5 (gflags/glog).
       - uses: lukka/get-cmake@v4.2.2
@@ -36,9 +43,19 @@ jobs:
         with:
           key: ${{ runner.os }}-build
 
+      - name: Install GCC 11 (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-11 g++-11
+
       - name: Build
         run: |
           export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            export CC=gcc-11 CXX=g++-11
+          fi
           cd ${{ env.RUNTIME_DIR }}
           cmake -B build -DCMAKE_BUILD_TYPE=Release
-          cmake --build build -j$(nproc)
+          if [ "$RUNNER_OS" = "Linux" ]; then JOBS=$(nproc); else JOBS=$(sysctl -n hw.ncpu); fi
+          cmake --build build -j"${JOBS}"
