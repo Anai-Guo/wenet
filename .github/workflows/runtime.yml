@@ -19,6 +19,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      # Pin CMake 3.x: GitHub-hosted runners may ship CMake 4, which rejects
+      # FetchContent deps with cmake_minimum_required < 3.5 (gflags/glog).
+      - uses: lukka/get-cmake@v3
+        with:
+          cmakeVersion: 3.28.6
+
       - name: Cache FC Base
         uses: actions/cache@v3
         with:
