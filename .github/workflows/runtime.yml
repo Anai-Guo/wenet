@@ -15,18 +15,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # macos-13 已退役；当前托管机使用 macos-latest（或 macos-14），仅提供 Xcode 16/26 等。
         os: [macos-latest, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v3
-
-      # 固定当前镜像上存在的 Xcode 16.x（Apple Clang 16）；不再提供 Xcode 14。
-      - name: Select Xcode 16.4 (Apple Clang 16)
-        if: runner.os == 'macOS'
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: "16.4"
 
       # Pin CMake 3.x: GitHub-hosted runners may ship CMake 4, which rejects
       # FetchContent deps with cmake_minimum_required < 3.5 (gflags/glog).
@@ -50,11 +42,24 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-11 g++-11
 
+      # Apple Clang 14 随 Xcode 14 提供（不是 Homebrew 的 llvm@14）。
+      # 若报错 “Could not find Xcode version … 14”，说明当前托管镜像未预装 Xcode 14，
+      # 需改用自托管 Mac（安装 Xcode 14）或换用镜像里存在的 Xcode 版本。
+      - name: Select Xcode 14 (Apple Clang 14)
+        if: runner.os == 'macOS'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "14"
+
       - name: Build
         run: |
           export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
           if [ "$RUNNER_OS" = "Linux" ]; then
             export CC=gcc-11 CXX=g++-11
+          fi
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            export CC=clang CXX=clang++
+            clang --version
           fi
           cd ${{ env.RUNTIME_DIR }}
           cmake -B build -DCMAKE_BUILD_TYPE=Release
