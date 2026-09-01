@@ -96,7 +96,7 @@ def main():
     use_cuda = args.gpu >= 0 and torch.cuda.is_available()
     device = torch.device('cuda' if use_cuda else 'cpu')
 
-    model = init_model(conf)
+    model, conf = init_model(args, conf)
     load_checkpoint(model, args.ckpt)
     model = model.eval().to(device)
 
