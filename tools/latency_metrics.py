@@ -11,24 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import argparse
 import logging
+import os
+
 import librosa
+import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torchaudio
+import torchaudio.compliance.kaldi as kaldi
 import yaml
 
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-import torchaudio.compliance.kaldi as kaldi
-
-from wenet.utils.init_model import init_model
 from wenet.utils.checkpoint import load_checkpoint
-from wenet.utils.file_utils import read_symbol_table
-from wenet.utils.mask import make_pad_mask
 from wenet.utils.common import replace_duplicates_with_blank
+from wenet.utils.file_utils import read_symbol_table
+from wenet.utils.init_model import init_model
+from wenet.utils.mask import make_pad_mask
 
 
 def get_args():
@@ -96,7 +96,7 @@ def main():
     use_cuda = args.gpu >= 0 and torch.cuda.is_available()
     device = torch.device('cuda' if use_cuda else 'cpu')
 
-    model = init_model(conf)
+    model, conf = init_model(args, conf)
     load_checkpoint(model, args.ckpt)
     model = model.eval().to(device)
 
