@@ -50,12 +50,12 @@ def meta_analysis(input_json, output_dir):
                         assert ('opus' == long_audio['format'])
                         assert (16000 == long_audio['sample_rate'])
                     except AssertionError:
-                        print(f'Warning: {aid} something is wrong, maybe'
+                        print(f'Warning: {aid} something is wrong, maybe '
                               'AssertionError, skipped')
                         continue
                     except Warning:
-                        print(f'Warning: {aid} something is wrong, maybe the'
-                              'error path: {long_audio_path}, skipped')
+                        print(f'Warning: {aid} something is wrong, maybe the '
+                              f'error path: {long_audio_path}, skipped')
                         continue
                     else:
                         wavscp.write(f'{aid}\t{long_audio_path}\n')
