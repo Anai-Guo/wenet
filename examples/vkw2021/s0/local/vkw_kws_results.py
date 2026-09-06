@@ -26,12 +26,11 @@ from torch.utils.data import DataLoader
 
 from wenet.dataset.dataset import Dataset
 from wenet.utils.checkpoint import load_checkpoint
-from wenet.utils.init_model import init_model
-from wenet.utils.init_tokenizer import init_tokenizer
-
 from wenet.utils.common import get_subsample
 from wenet.utils.ctc_utils import remove_duplicates_and_blank
 from wenet.utils.file_utils import read_symbol_table
+from wenet.utils.init_model import init_model
+from wenet.utils.init_tokenizer import init_tokenizer
 from wenet.utils.mask import make_pad_mask
 
 
